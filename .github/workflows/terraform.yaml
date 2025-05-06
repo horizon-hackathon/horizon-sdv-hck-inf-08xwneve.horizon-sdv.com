@@ -368,22 +368,19 @@ jobs:
           script: |
             core.setFailed('Terraform plan failed.')
 
-      # - name: terraform apply
-      #   working-directory: ${{ inputs.directory }}/
-      #   id: tfapply
-      #   if: ${{ contains(needs.get-env.outputs.action, 'apply')}}
-      #   env:
-      #     TF_VAR_sdv_gh_access_token: ${{ steps.get_github_app_token.outputs.token }}
-      #     TF_VAR_sdv_gh_repo_name: ${{ github.event.repository.full_name }}
-      #     TF_VAR_sdv_gh_env_name: ${{ needs.get-env.outputs.environment }}
-      #   run: |
-      #     git config --global url."https://x-access-token:${{steps.get_github_app_token.outputs.token}}@github.com".insteadOf https://github.com
-      #     terraform apply -parallelism=${{ inputs.parallelism }} -input=false -no-color tfplan
-      #   continue-on-error: true
-
-      - name: terraform destroy -auto-approve
+      - name: terraform apply
+        working-directory: ${{ inputs.directory }}/
+        id: tfapply
+        if: ${{ contains(needs.get-env.outputs.action, 'apply')}}
+        env:
+          TF_VAR_sdv_gh_access_token: ${{ steps.get_github_app_token.outputs.token }}
+          TF_VAR_sdv_gh_repo_name: ${{ github.event.repository.full_name }}
+          TF_VAR_sdv_gh_env_name: ${{ needs.get-env.outputs.environment }}
         run: |
+          git config --global url."https://x-access-token:${{steps.get_github_app_token.outputs.token}}@github.com".insteadOf https://github.com
+          # terraform apply -parallelism=${{ inputs.parallelism }} -input=false -no-color tfplan
           terraform destroy -auto-approve
+        continue-on-error: true
 
       - name: Post Apply Success
         if: steps.tfapply.outcome == 'success'
