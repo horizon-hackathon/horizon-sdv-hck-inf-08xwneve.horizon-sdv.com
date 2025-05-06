@@ -382,6 +382,8 @@ jobs:
       #   continue-on-error: true
 
       - name: terraform destroy -auto-approve
+        run: |
+          terraform destroy -auto-approve
 
       - name: Post Apply Success
         if: steps.tfapply.outcome == 'success'
